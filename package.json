@@ -1,0 +1,17 @@
+{
+  "name": "plaid-transaction-viewer",
+  "version": "1.0.0",
+  "description": "Transaction viewer with Plaid integration",
+  "scripts": {
+    "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm start\"",
+    "start-backend": "cd backend && npm start",
+    "start-frontend": "cd frontend && npm start"
+  },
+  "keywords": ["plaid", "transactions", "banking"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

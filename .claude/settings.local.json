@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.unit.co)",
+      "WebFetch(domain:www.knotapi.com)",
+      "WebFetch(domain:updates.unit.co)",
+      "WebSearch",
+      "WebFetch(domain:www.anthropic.com)",
+      "WebFetch(domain:plaid.com)",
+      "WebFetch(domain:increase.com)",
+      "WebFetch(domain:dev.synctera.com)",
+      "WebFetch(domain:docs.synctera.com)",
+      "Bash(curl:*)",
+      "Bash(echo:*)",
+      "Bash(lsof:*)",
+      "WebFetch(domain:docs.paywithlocus.com)",
+      "Bash(textutil:*)",
+      "Bash(unzip:*)",
+      "Bash(xargs kill:*)",
+      "Bash(node server.js:*)",
+      "Bash(sqlite3:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
