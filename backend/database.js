@@ -289,6 +289,77 @@ function initializeDatabase() {
       )
     `);
 
+    // Locus wallet funding table (tracks deposits from Increase to Locus)
+    db.run(`
+      CREATE TABLE IF NOT EXISTS locus_funding (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        amount REAL NOT NULL,
+        source TEXT NOT NULL,
+        source_account_id TEXT,
+        status TEXT DEFAULT 'completed',
+        locus_balance_after REAL,
+        description TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // User settings table (for preferences, streaks, autonomous mode)
+    db.run(`
+      CREATE TABLE IF NOT EXISTS user_settings (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id TEXT DEFAULT 'default_user',
+        locus_wallet_balance REAL DEFAULT 0,
+        savings_streak INTEGER DEFAULT 0,
+        last_savings_date TEXT,
+        autonomous_mode_enabled INTEGER DEFAULT 0,
+        autonomous_savings_limit REAL DEFAULT 500,
+        locus_wallet_address TEXT,
+        total_ai_rewards REAL DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Rewards history table (AI-generated rewards for good behavior)
+    db.run(`
+      CREATE TABLE IF NOT EXISTS rewards_history (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        reward_type TEXT NOT NULL,
+        amount REAL NOT NULL,
+        reason TEXT,
+        locus_payment_id TEXT,
+        streak_count INTEGER,
+        status TEXT DEFAULT 'completed',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (locus_payment_id) REFERENCES locus_payments(locus_payment_id)
+      )
+    `);
+
+    // Charity recipients table (pre-approved charity wallets)
+    db.run(`
+      CREATE TABLE IF NOT EXISTS charity_recipients (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        description TEXT,
+        wallet_address TEXT NOT NULL,
+        category TEXT,
+        website TEXT,
+        logo_url TEXT,
+        active INTEGER DEFAULT 1,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Seed some popular charities
+    db.run(`
+      INSERT OR IGNORE INTO charity_recipients (id, name, description, wallet_address, category, website)
+      VALUES
+        (1, 'GiveDirectly', 'Direct cash transfers to people living in poverty', '0xGiveDirectly...', 'Poverty', 'https://givedirectly.org'),
+        (2, 'Red Cross', 'Humanitarian aid and emergency assistance', '0xRedCross...', 'Emergency', 'https://redcross.org'),
+        (3, 'Doctors Without Borders', 'Medical humanitarian organization', '0xMSF...', 'Health', 'https://msf.org'),
+        (4, 'The Ocean Cleanup', 'Removing plastic from oceans', '0xOceanCleanup...', 'Environment', 'https://theoceancleanup.com')
+    `);
+
     console.log('Database tables initialized');
   });
 }

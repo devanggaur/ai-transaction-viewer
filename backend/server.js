@@ -950,10 +950,151 @@ app.post('/api/savings/sweep/analyze', async (req, res) => {
   }
 });
 
+// ===== LOCUS WALLET & REWARDS ENDPOINTS =====
+
+const rewardsManager = require('./rewardsManager');
+
+// Get Locus wallet balance and stats
+app.get('/api/locus/wallet', async (req, res) => {
+  try {
+    const userId = req.query.userId || 'default_user';
+    const walletInfo = await rewardsManager.getLocusWalletBalance(userId);
+    const settings = await rewardsManager.getUserSettings(userId);
+
+    res.json({
+      success: true,
+      balance: walletInfo.balance,
+      totalRewards: walletInfo.totalRewards,
+      savingsStreak: settings.savings_streak,
+      currency: 'USDC'
+    });
+  } catch (error) {
+    console.error('Error getting Locus wallet:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Fund Locus wallet from Increase account
+app.post('/api/locus/fund', async (req, res) => {
+  try {
+    const { amount, fromAccountId, userId = 'default_user' } = req.body;
+
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ error: 'Invalid amount' });
+    }
+
+    const result = await rewardsManager.fundLocusWallet(amount, fromAccountId, userId);
+    res.json(result);
+  } catch (error) {
+    console.error('Error funding Locus wallet:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get rewards history
+app.get('/api/locus/rewards', async (req, res) => {
+  try {
+    const userId = req.query.userId || 'default_user';
+    const limit = parseInt(req.query.limit) || 50;
+
+    const rewards = await rewardsManager.getRewardsHistory(userId, limit);
+    res.json({
+      success: true,
+      rewards
+    });
+  } catch (error) {
+    console.error('Error getting rewards history:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get list of charities
+app.get('/api/locus/charities', async (req, res) => {
+  try {
+    const charities = await rewardsManager.getCharities();
+    res.json({
+      success: true,
+      charities
+    });
+  } catch (error) {
+    console.error('Error getting charities:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Send charity donation via Locus
+app.post('/api/locus/donate', async (req, res) => {
+  try {
+    const { charityId, amount, userId = 'default_user' } = req.body;
+
+    if (!charityId || !amount || amount <= 0) {
+      return res.status(400).json({ error: 'Invalid charity or amount' });
+    }
+
+    const result = await rewardsManager.sendCharityDonation(charityId, amount, userId);
+    res.json(result);
+  } catch (error) {
+    console.error('Error sending donation:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get Locus payment history
+app.get('/api/locus/payments', async (req, res) => {
+  try {
+    const locusPayments = await database.dbAll(`
+      SELECT * FROM locus_payments
+      ORDER BY created_at DESC
+      LIMIT 50
+    `);
+
+    res.json({
+      success: true,
+      payments: locusPayments
+    });
+  } catch (error) {
+    console.error('Error getting Locus payments:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Increment savings streak (called when user accepts a savings suggestion)
+app.post('/api/locus/streak/increment', async (req, res) => {
+  try {
+    const { userId = 'default_user' } = req.body;
+    const result = await rewardsManager.incrementSavingsStreak(userId);
+
+    res.json({
+      success: true,
+      ...result
+    });
+  } catch (error) {
+    console.error('Error incrementing streak:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Plaid environment: ${process.env.PLAID_ENV}`);
-  console.log(`OpenAI configured: ${process.env.OPENAI_API_KEY ? 'Yes' : 'No'}`);
-  console.log(`Unit configured: ${process.env.UNIT_API_TOKEN && process.env.UNIT_API_TOKEN !== 'your_unit_sandbox_token_here' ? 'Yes' : 'No (add token to .env)'}`);
-  console.log(`Increase configured: ${process.env.INCREASE_API_KEY && process.env.INCREASE_API_KEY !== 'your_increase_sandbox_key_here' ? 'Yes' : 'No (add key to .env)'}`);
+  console.log(`\n🚀 Server running on port ${PORT}`);
+  console.log(`\n📊 API Integrations:`);
+  console.log(`  ├─ Plaid: ${process.env.PLAID_ENV} mode`);
+  console.log(`  ├─ OpenAI: ${process.env.OPENAI_API_KEY ? '✓ Configured' : '✗ Not configured'}`);
+  console.log(`  ├─ Unit: ${process.env.UNIT_API_TOKEN && process.env.UNIT_API_TOKEN !== 'your_unit_sandbox_token_here' ? '✓ Configured' : '✗ Not configured'}`);
+  console.log(`  ├─ Increase: ${process.env.INCREASE_API_KEY && process.env.INCREASE_API_KEY !== 'your_increase_sandbox_key_here' ? '✓ Configured' : '✗ Not configured'}`);
+
+  const locusConfigured = process.env.LOCUS_API_KEY && process.env.LOCUS_WALLET_ADDRESS;
+  if (locusConfigured) {
+    console.log(`  └─ Locus: ✓ Configured (Demo Mode)`);
+    console.log(`      • API Key: ${process.env.LOCUS_API_KEY.substring(0, 20)}...`);
+    console.log(`      • Wallet: ${process.env.LOCUS_WALLET_ADDRESS}`);
+    console.log(`      • Mode: Simulated transactions for hackathon demo`);
+  } else {
+    console.log(`  └─ Locus: ✗ Not configured (add to .env)`);
+  }
+
+  console.log(`\n💡 AI Wallet Features:`);
+  console.log(`  • Streak-based rewards`);
+  console.log(`  • Charitable giving via Locus`);
+  console.log(`  • Wallet funding from Increase`);
+  console.log(`\n✨ Ready for hackathon demo!\n`);
 });

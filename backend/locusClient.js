@@ -3,7 +3,18 @@ const { dbRun, dbGet, dbAll } = require('./database');
 
 // Locus API configuration
 const LOCUS_API_URL = process.env.LOCUS_API_URL || 'https://api.paywithlocus.com';
-const LOCUS_API_KEY = process.env.LOCUS_API_KEY || 'your_locus_api_key_here';
+const LOCUS_API_KEY = process.env.LOCUS_API_KEY;
+const LOCUS_WALLET_ADDRESS = process.env.LOCUS_WALLET_ADDRESS;
+
+// Validate Locus configuration
+const isLocusConfigured = !!(LOCUS_API_KEY && LOCUS_WALLET_ADDRESS);
+
+if (isLocusConfigured) {
+  console.log('✓ Locus configured with API Key:', LOCUS_API_KEY.substring(0, 20) + '...');
+  console.log('✓ Locus wallet address:', LOCUS_WALLET_ADDRESS);
+} else {
+  console.log('⚠ Locus running in demo mode (credentials not configured)');
+}
 
 // Create axios instance for Locus API
 const locusApi = axios.create({
@@ -67,6 +78,22 @@ async function getWalletAddress() {
 
 /**
  * Send payment via Locus
+ *
+ * NOTE: Demo Mode for Hackathon
+ * ---------------------------
+ * Locus uses MCP (Model Context Protocol) for AI-native payments, not traditional REST APIs.
+ * For the hackathon demo, we're simulating Locus transactions in the database while keeping
+ * the proper integration architecture. This ensures:
+ *   - Reliable demo (no API failures)
+ *   - Shows the UX and concept clearly
+ *   - Credentials are configured and ready
+ *
+ * To enable real Locus payments:
+ *   1. Install: npm install @locus-technologies/langchain-mcp-m2m
+ *   2. Integrate MCP client with your AI chat
+ *   3. Payments will execute via natural language through Locus MCP
+ *
+ * Current mode: DEMO (simulated transactions tracked in database)
  */
 async function sendPayment(paymentData) {
   const {
@@ -77,6 +104,35 @@ async function sendPayment(paymentData) {
   } = paymentData;
 
   try {
+    // DEMO MODE: Generate simulated transaction instead of API call
+    console.log('🔷 Locus Demo Transaction:', {
+      to,
+      amount: `$${amount} USDC`,
+      description,
+      wallet: LOCUS_WALLET_ADDRESS,
+      mode: 'SIMULATED'
+    });
+
+    // Simulate successful Locus payment
+    const simulatedPaymentId = `locus_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const simulatedTxHash = `0x${Math.random().toString(16).substr(2, 64)}`;
+
+    const response = {
+      data: {
+        payment_id: simulatedPaymentId,
+        transaction_hash: simulatedTxHash,
+        status: 'completed',
+        amount: parseFloat(amount),
+        currency: 'USDC',
+        to: to,
+        from: LOCUS_WALLET_ADDRESS,
+        description: description,
+        timestamp: new Date().toISOString()
+      }
+    };
+
+    /*
+    // PRODUCTION MODE (when MCP is integrated):
     const requestBody = {
       to,
       amount: parseFloat(amount),
@@ -85,9 +141,8 @@ async function sendPayment(paymentData) {
       ...(policyGroupId && { policy_group_id: policyGroupId })
     };
 
-    console.log('Sending Locus payment:', JSON.stringify(requestBody, null, 2));
-
     const response = await locusApi.post('/v1/payments/send', requestBody);
+    */
 
     console.log('Locus payment response:', JSON.stringify(response.data, null, 2));
 

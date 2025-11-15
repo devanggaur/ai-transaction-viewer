@@ -5,6 +5,7 @@ import './App.css';
 import Chat from './Chat';
 import VaultsIncrease from './VaultsIncrease';
 import SavingsSuggestions from './SavingsSuggestions';
+import LocusWallet from './LocusWallet';
 
 function App() {
   const [linkToken, setLinkToken] = useState(null);
@@ -170,6 +171,12 @@ function App() {
           >
             🏦 Vaults
           </button>
+          <button
+            onClick={() => setActiveTab('wallet')}
+            className={`tab-button ${activeTab === 'wallet' ? 'active' : ''}`}
+          >
+            🤖 AI Wallet
+          </button>
         </div>
       )}
 
@@ -182,6 +189,8 @@ function App() {
         />
       ) : activeTab === 'vaults' ? (
         <VaultsIncrease />
+      ) : activeTab === 'wallet' ? (
+        <LocusWallet entityId="sandbox_entity_mypgdnyciycaoev7jpro" />
       ) : (
         <div className="container">
         {!accessToken ? (

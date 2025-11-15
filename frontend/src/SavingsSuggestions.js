@@ -129,7 +129,25 @@ function SavingsSuggestions({ transactions, entityId }) {
       const data = await response.json();
 
       if (data.success) {
-        alert(`Success! Saved $${selectedAmount.toFixed(2)} to your vault!`);
+        // Increment savings streak
+        try {
+          const streakResponse = await fetch(`${API_URL}/api/locus/streak/increment`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({})
+          });
+          const streakData = await streakResponse.json();
+
+          if (streakData.success && streakData.awarded) {
+            alert(`Success! Saved $${selectedAmount.toFixed(2)} to your vault!\n\n🎉 Bonus: ${streakData.reason}\nYou earned $${streakData.amount} in your AI Wallet!`);
+          } else {
+            alert(`Success! Saved $${selectedAmount.toFixed(2)} to your vault!`);
+          }
+        } catch (streakError) {
+          console.error('Error updating streak:', streakError);
+          alert(`Success! Saved $${selectedAmount.toFixed(2)} to your vault!`);
+        }
+
         // Remove this opportunity
         setOpportunities(prev => prev.filter(opp => opp.type !== 'windfall'));
         // Refresh accounts
@@ -167,7 +185,25 @@ function SavingsSuggestions({ transactions, entityId }) {
       const data = await response.json();
 
       if (data.success) {
-        alert(`Success! Saved $${selectedAmount.toFixed(2)} to your vault!`);
+        // Increment savings streak
+        try {
+          const streakResponse = await fetch(`${API_URL}/api/locus/streak/increment`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({})
+          });
+          const streakData = await streakResponse.json();
+
+          if (streakData.success && streakData.awarded) {
+            alert(`Success! Saved $${selectedAmount.toFixed(2)} to your vault!\n\n🎉 Bonus: ${streakData.reason}\nYou earned $${streakData.amount} in your AI Wallet!`);
+          } else {
+            alert(`Success! Saved $${selectedAmount.toFixed(2)} to your vault!`);
+          }
+        } catch (streakError) {
+          console.error('Error updating streak:', streakError);
+          alert(`Success! Saved $${selectedAmount.toFixed(2)} to your vault!`);
+        }
+
         // Remove this opportunity
         setOpportunities(prev => prev.filter(opp => opp.type !== 'sweep'));
         // Refresh accounts
