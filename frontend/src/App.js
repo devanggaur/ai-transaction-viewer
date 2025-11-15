@@ -6,6 +6,8 @@ import Chat from './Chat';
 import VaultsIncrease from './VaultsIncrease';
 import SavingsSuggestions from './SavingsSuggestions';
 import LocusWallet from './LocusWallet';
+import FreshStartBanner from './FreshStartBanner';
+import WeeklyChallengeCard from './WeeklyChallengeCard';
 
 function App() {
   const [linkToken, setLinkToken] = useState(null);
@@ -144,6 +146,9 @@ function App() {
         <h1>Transaction Viewer</h1>
         <p>Connect your bank account to view transactions and get AI insights</p>
       </header>
+
+      {accessToken && <FreshStartBanner />}
+      {accessToken && <WeeklyChallengeCard />}
 
       {accessToken && (
         <div className="tab-navigation">

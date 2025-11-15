@@ -747,6 +747,12 @@ app.post('/api/savings/windfall/accept', async (req, res) => {
       description || 'Windfall Savings'
     );
 
+    // Automatically record progress towards weekly challenge
+    const challengesManager = require('./challengesManager');
+    await challengesManager.recordSaveForChallenge('default_user', amount).catch(err => {
+      console.log('Note: Could not record challenge progress:', err.message);
+    });
+
     res.json(result);
   } catch (error) {
     console.error('Error executing windfall savings:', error);
@@ -772,6 +778,12 @@ app.post('/api/savings/sweep/accept', async (req, res) => {
       amount,
       description || 'Smart Sweep Savings'
     );
+
+    // Automatically record progress towards weekly challenge
+    const challengesManager = require('./challengesManager');
+    await challengesManager.recordSaveForChallenge('default_user', amount).catch(err => {
+      console.log('Note: Could not record challenge progress:', err.message);
+    });
 
     res.json(result);
   } catch (error) {
@@ -946,6 +958,104 @@ app.post('/api/savings/sweep/analyze', async (req, res) => {
     }
   } catch (error) {
     console.error('Error analyzing sweep:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ===== FRESH-START DAYS ENDPOINTS =====
+
+const freshStartDetector = require('./freshStartDetector');
+
+// Check for fresh-start opportunity
+app.get('/api/savings/fresh-start/check', async (req, res) => {
+  try {
+    const userId = req.query.userId || 'default_user';
+    const result = await freshStartDetector.getFreshStartPrompt(userId);
+    res.json(result);
+  } catch (error) {
+    console.error('Error checking fresh start:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Accept fresh-start bump
+app.post('/api/savings/fresh-start/accept', async (req, res) => {
+  try {
+    const { userId = 'default_user', bumpPercentage } = req.body;
+
+    if (!bumpPercentage || bumpPercentage <= 0) {
+      return res.status(400).json({ error: 'Valid bump percentage required' });
+    }
+
+    // Apply the bump
+    const result = await freshStartDetector.applyFreshStartBump(userId, bumpPercentage);
+
+    if (!result.success) {
+      return res.status(500).json({ error: result.error });
+    }
+
+    // Record that we showed the prompt
+    await freshStartDetector.recordFreshStartPrompt(userId);
+
+    res.json({
+      success: true,
+      message: `Auto-save increased by ${bumpPercentage}%!`,
+      ...result
+    });
+  } catch (error) {
+    console.error('Error accepting fresh start bump:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Dismiss fresh-start prompt (so it doesn't show again today)
+app.post('/api/savings/fresh-start/dismiss', async (req, res) => {
+  try {
+    const { userId = 'default_user' } = req.body;
+    await freshStartDetector.recordFreshStartPrompt(userId);
+    res.json({ success: true, message: 'Fresh start prompt dismissed' });
+  } catch (error) {
+    console.error('Error dismissing fresh start:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ===== WEEKLY CHALLENGES ENDPOINTS =====
+
+const challengesManager = require('./challengesManager');
+
+// Get current week's challenge and progress
+app.get('/api/challenges/current', async (req, res) => {
+  try {
+    const userId = req.query.userId || 'default_user';
+    const result = await challengesManager.getActiveChallenge(userId);
+    res.json(result);
+  } catch (error) {
+    console.error('Error getting current challenge:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Record a save towards the challenge
+app.post('/api/challenges/record-save', async (req, res) => {
+  try {
+    const { userId = 'default_user', amount = 5 } = req.body;
+    const result = await challengesManager.recordSaveForChallenge(userId, amount);
+    res.json(result);
+  } catch (error) {
+    console.error('Error recording save for challenge:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Claim reward for completed challenge
+app.post('/api/challenges/claim-reward', async (req, res) => {
+  try {
+    const { userId = 'default_user' } = req.body;
+    const result = await challengesManager.claimChallengeReward(userId);
+    res.json(result);
+  } catch (error) {
+    console.error('Error claiming challenge reward:', error);
     res.status(500).json({ error: error.message });
   }
 });

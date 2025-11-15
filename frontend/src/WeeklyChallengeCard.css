@@ -1,0 +1,209 @@
+.weekly-challenge-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  padding: 24px;
+  margin: 20px 0;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  animation: fadeIn 0.5s ease-out;
+}
+
+.weekly-challenge-card.completed {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.weekly-challenge-card.loading {
+  background: #f5f7fa;
+  color: #666;
+  text-align: center;
+  padding: 40px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.challenge-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.challenge-icon {
+  font-size: 48px;
+  line-height: 1;
+}
+
+.challenge-info {
+  flex: 1;
+}
+
+.challenge-info h3 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+}
+
+.challenge-info p {
+  margin: 0;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.challenge-progress {
+  margin: 20px 0;
+}
+
+.progress-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.progress-text {
+  font-size: 18px;
+  color: white;
+  font-weight: 500;
+}
+
+.progress-text strong {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.reward-badge {
+  background: rgba(255, 255, 255, 0.25);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+}
+
+.progress-bar-container {
+  height: 32px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #FFD700 0%, #FFA500 100%);
+  border-radius: 16px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
+}
+
+.progress-percentage {
+  font-size: 14px;
+  font-weight: 700;
+  color: #333;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.claim-reward-button {
+  width: 100%;
+  padding: 16px;
+  background: white;
+  color: #667eea;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.claim-reward-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.claim-reward-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.claim-reward-button:active {
+  transform: translateY(0);
+}
+
+.reward-claimed-badge {
+  background: rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  padding: 16px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+  margin-top: 20px;
+}
+
+.challenge-tip {
+  margin-top: 16px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.95);
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .weekly-challenge-card {
+    padding: 16px;
+  }
+
+  .challenge-icon {
+    font-size: 36px;
+  }
+
+  .challenge-info h3 {
+    font-size: 20px;
+  }
+
+  .challenge-info p {
+    font-size: 14px;
+  }
+
+  .progress-text {
+    font-size: 16px;
+  }
+
+  .progress-text strong {
+    font-size: 20px;
+  }
+
+  .progress-stats {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .claim-reward-button {
+    font-size: 16px;
+    padding: 14px;
+  }
+}

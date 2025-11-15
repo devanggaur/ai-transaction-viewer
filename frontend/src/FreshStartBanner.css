@@ -1,0 +1,153 @@
+.fresh-start-banner {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fresh-start-banner.new_year {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.fresh-start-banner.new_month {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.fresh-start-banner.new_week {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.fresh-start-banner.birthday {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.fresh-start-content {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+}
+
+.fresh-start-icon {
+  font-size: 48px;
+  line-height: 1;
+}
+
+.fresh-start-text {
+  flex: 1;
+  color: white;
+}
+
+.fresh-start-text h3 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.fresh-start-text p {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  opacity: 0.95;
+}
+
+.fresh-start-suggestion {
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px 12px;
+  border-radius: 8px;
+  display: inline-block;
+  margin-top: 8px;
+}
+
+.fresh-start-suggestion strong {
+  font-weight: 700;
+}
+
+.fresh-start-amounts {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.fresh-start-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.fresh-start-accept,
+.fresh-start-dismiss {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.fresh-start-accept {
+  background: white;
+  color: #667eea;
+}
+
+.fresh-start-accept:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+}
+
+.fresh-start-accept:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.fresh-start-dismiss {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+}
+
+.fresh-start-dismiss:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .fresh-start-banner {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .fresh-start-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .fresh-start-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .fresh-start-accept,
+  .fresh-start-dismiss {
+    width: 100%;
+  }
+}
